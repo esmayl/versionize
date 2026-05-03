@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Versionize.ConventionalCommits;
 using Version = NuGet.Versioning.SemanticVersion;
@@ -82,7 +83,40 @@ public sealed class ChangelogBuilder
 
     public static string GenerateCSVFromModel(Release model)
     {
+        StringBuilder builder = new StringBuilder();
+
+
+        string headers = string.Join(",",typeof(Release).GetProperties().Where(prop => prop.Name != "Commits").Select(prop => prop.Name));
+        builder.Append(headers);
+        builder.Append(',');
         
+        headers = string.Join(",",typeof(Commit).GetProperties().Select(prop => prop.Name));
+        builder.Append(headers);
+
+        builder.Append('\n');
+        
+        foreach (Commit modelCommit in model.Commits)
+        {
+            builder.Append(model.Version);
+            builder.Append(',');
+            builder.Append(model.ReleaseDate);
+            builder.Append(',');
+            builder.Append(modelCommit.Hash);
+            builder.Append(',');
+            builder.Append('"');
+            builder.Append(modelCommit.Message);
+            builder.Append('"');
+            builder.Append(',');
+            builder.Append(modelCommit.Date);
+            builder.Append(',');
+            builder.Append(modelCommit.Author);
+            builder.Append(',');
+            builder.Append(modelCommit.CommitType.ToString());
+            
+            builder.Append('\n');
+        }
+
+        return builder.ToString();
     }
     
     public static Release GenerateReleaseModel(
@@ -93,26 +127,25 @@ public sealed class ChangelogBuilder
         IEnumerable<ConventionalCommit> commits,
         ProjectOptions projectOptions)
     {
-        var currentTag = projectOptions.GetTagName(newVersion);
-        var previousTag = projectOptions.GetTagName(previousVersion);
-        var compareUrl = linkBuilder.BuildVersionTagLink(currentTag, previousTag);
-        var versionTagLink = string.IsNullOrWhiteSpace(compareUrl) ? newVersion.ToString() : $"[{newVersion}]({compareUrl})";
+        // var currentTag = projectOptions.GetTagName(newVersion);
+        // var previousTag = projectOptions.GetTagName(previousVersion);
+        // var compareUrl = linkBuilder.BuildVersionTagLink(currentTag, previousTag);
+        // var versionTagLink = string.IsNullOrWhiteSpace(compareUrl) ? newVersion.ToString() : $"[{newVersion}]({compareUrl})";
 
         Release release = new Release();
 
         release.Version = newVersion.ToFullString();
-        release.Commits = GenerateCommitListForCSV(linkBuilder, commits, projectOptions.Changelog);
+        release.Commits = GenerateCommitListForCSV(linkBuilder, commits);
         release.ReleaseDate = versionTime.LocalDateTime;
         
         return release;
     }
     
-    public static List<Commit> GenerateCommitListForCSV(IChangelogLinkBuilder linkBuilder, IEnumerable<ConventionalCommit> commits, ChangelogOptions changelogOptions)
+    public static List<Commit> GenerateCommitListForCSV(IChangelogLinkBuilder linkBuilder, IEnumerable<ConventionalCommit> commits)
     {
         List<Commit> markdown = new List<Commit>();
         List<ConventionalCommit> commitsAsList = commits.ToList();
 
-        // Loop over the standard commits, fix and feat are pre-defined and can be overwritten via the cli
         foreach (var changelogSection in commitsAsList)
         {
             var buildBlock = BuildCommit(changelogSection.Type, linkBuilder, changelogSection);
@@ -157,14 +190,14 @@ public sealed class ChangelogBuilder
             foreach (ConventionalCommitNote conventionalCommitNote in conventionalCommit.Notes)
             {
                 sb.Append(",");
-                sb.Append(conventionalCommitNote.Text);
+                sb.Append(conventionalCommitNote.Text?.Replace("\"",string.Empty)); // replace any double quotes with empty string, so the csv can contain the double quotes to prevent corrupt data
             }
 
             commit.Message = sb.ToString();
         }
         else
         {
-            commit.Message = conventionalCommit.Subject ?? "No subject";
+            commit.Message = conventionalCommit.Subject != null ? conventionalCommit.Subject.Replace("\"",string.Empty) : "No subject"; // replace any double quotes with empty string, so the csv can contain the double quotes to prevent corrupt data
         }
 
 

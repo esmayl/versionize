@@ -661,6 +661,12 @@ public class ChangelogBuilderTests : IDisposable
         // Assert
         Assert.NotNull(release);
         Assert.Equal(release.Commits.Count,3);
+
+        string csvFile = ChangelogBuilder.GenerateCSVFromModel(release);
+        
+        Assert.NotEqual(0, csvFile.Length);
+        
+        File.WriteAllText("test.csv",csvFile);
     }
     
     
