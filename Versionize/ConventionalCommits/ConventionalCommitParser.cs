@@ -29,7 +29,9 @@ public static class ConventionalCommitParser
     {
         var conventionalCommit = new ConventionalCommit
         {
-            Sha = commit.Sha
+            Sha = commit.Sha,
+            Author = commit.Author.Name + " " +  commit.Author.Email,
+            Date = commit.Author.When.LocalDateTime,
         };
 
         var commitMessageLines = commit.Message

@@ -119,13 +119,7 @@ public sealed class ChangelogBuilder
         return builder.ToString();
     }
     
-    public static Release GenerateReleaseModel(
-        Version newVersion,
-        Version previousVersion,
-        DateTimeOffset versionTime,
-        IChangelogLinkBuilder linkBuilder,
-        IEnumerable<ConventionalCommit> commits,
-        ProjectOptions projectOptions)
+    public static Release GenerateReleaseModel(Version newVersion, DateTimeOffset versionTime, IChangelogLinkBuilder linkBuilder, IEnumerable<ConventionalCommit> commits)
     {
         // var currentTag = projectOptions.GetTagName(newVersion);
         // var previousTag = projectOptions.GetTagName(previousVersion);
@@ -181,6 +175,8 @@ public sealed class ChangelogBuilder
         
         commit.CommitType = commitType;
         commit.Hash = conventionalCommit.Sha ?? "000000000000000000000000";
+        commit.Author = conventionalCommit.Author ?? "No author";
+        commit.Date = conventionalCommit.Date?.LocalDateTime ?? new DateTime();
         
         if (conventionalCommit.Notes.Count != 0)
         {

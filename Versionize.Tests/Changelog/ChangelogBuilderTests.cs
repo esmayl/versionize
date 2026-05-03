@@ -622,7 +622,6 @@ public class ChangelogBuilderTests : IDisposable
         // Act
         Release release = ChangelogBuilder.GenerateReleaseModel(
             new Version(1, 1, 0),
-            new Version(1, 1, 0),
             DateTimeOffset.Parse("2021-5-2"),
             linkBuilder,
             [
@@ -630,8 +629,7 @@ public class ChangelogBuilderTests : IDisposable
                 ConventionalCommitParser.Parse(new TestCommit("b360d6a307909c6e571b29d4a329fd786c5d4543", "feat: a feature")),
                 ConventionalCommitParser.Parse(
                     new TestCommit("c360d6a307909c6e571b29d4a329fd786c5d4543", "feat: a breaking change feature\nBREAKING CHANGE: this will break everything")),
-            ],
-            ProjectOptions.DefaultOneProjectPerRepo);
+            ]);
 
         // Assert
         Assert.NotNull(release);
@@ -647,7 +645,6 @@ public class ChangelogBuilderTests : IDisposable
         // Act
         Release release = ChangelogBuilder.GenerateReleaseModel(
             new Version(1, 1, 0),
-            new Version(1, 1, 0),
             DateTimeOffset.Parse("2021-5-2"),
             linkBuilder,
             [
@@ -655,8 +652,7 @@ public class ChangelogBuilderTests : IDisposable
                 ConventionalCommitParser.Parse(new TestCommit("b360d6a307909c6e571b29d4a329fd786c5d4543", "feat: a feature")),
                 ConventionalCommitParser.Parse(
                     new TestCommit("c360d6a307909c6e571b29d4a329fd786c5d4543", "feat: a breaking change feature\nBREAKING CHANGE: this will break everything")),
-            ],
-            ProjectOptions.DefaultOneProjectPerRepo);
+            ]);
 
         // Assert
         Assert.NotNull(release);

@@ -9,6 +9,10 @@ public sealed record ConventionalCommit
     public string? Type { get; init; }
 
     public string? Subject { get; init; }
+    
+    public string? Author { get; init; }
+    
+    public DateTimeOffset? Date { get; init; }
 
     public List<ConventionalCommitNote> Notes { get; init; } = [];
 
