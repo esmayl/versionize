@@ -3,6 +3,7 @@ using Versionize.ConventionalCommits;
 using Version = NuGet.Versioning.SemanticVersion;
 using Versionize.Config;
 using Versionize.Changelog.LinkBuilders;
+using Versionize.Database.Models;
 
 namespace Versionize.Changelog;
 
@@ -78,6 +79,98 @@ public sealed class ChangelogBuilder
 
         return markdown + GenerateCommitList(linkBuilder, commits, projectOptions.Changelog);
     }
+
+    public static string GenerateCSVFromModel(Release model)
+    {
+        
+    }
+    
+    public static Release GenerateReleaseModel(
+        Version newVersion,
+        Version previousVersion,
+        DateTimeOffset versionTime,
+        IChangelogLinkBuilder linkBuilder,
+        IEnumerable<ConventionalCommit> commits,
+        ProjectOptions projectOptions)
+    {
+        var currentTag = projectOptions.GetTagName(newVersion);
+        var previousTag = projectOptions.GetTagName(previousVersion);
+        var compareUrl = linkBuilder.BuildVersionTagLink(currentTag, previousTag);
+        var versionTagLink = string.IsNullOrWhiteSpace(compareUrl) ? newVersion.ToString() : $"[{newVersion}]({compareUrl})";
+
+        Release release = new Release();
+
+        release.Version = newVersion.ToFullString();
+        release.Commits = GenerateCommitListForCSV(linkBuilder, commits, projectOptions.Changelog);
+        release.ReleaseDate = versionTime.LocalDateTime;
+        
+        return release;
+    }
+    
+    public static List<Commit> GenerateCommitListForCSV(IChangelogLinkBuilder linkBuilder, IEnumerable<ConventionalCommit> commits, ChangelogOptions changelogOptions)
+    {
+        List<Commit> markdown = new List<Commit>();
+        List<ConventionalCommit> commitsAsList = commits.ToList();
+
+        // Loop over the standard commits, fix and feat are pre-defined and can be overwritten via the cli
+        foreach (var changelogSection in commitsAsList)
+        {
+            var buildBlock = BuildCommit(changelogSection.Type, linkBuilder, changelogSection);
+
+            markdown.Add(buildBlock);
+        }
+
+        return markdown;
+    }
+    
+    private static Commit BuildCommit(string? header, IChangelogLinkBuilder linkBuilder, ConventionalCommit conventionalCommit)
+    {
+        Commit commit = new Commit();
+        
+        CommitType commitType = CommitType.Other;
+
+        if (conventionalCommit.IsBreakingChange)
+        {
+            commitType = CommitType.BreakingChange;
+        }
+        else if (conventionalCommit.IsFeature)
+        {
+            commitType = CommitType.Feature;
+        }
+        else if (conventionalCommit.IsFix)
+        {
+            commitType = CommitType.Bugfix;
+        }
+        else
+        {
+            commitType = CommitType.Other;
+        }
+        
+        commit.CommitType = commitType;
+        commit.Hash = conventionalCommit.Sha ?? "000000000000000000000000";
+        
+        if (conventionalCommit.Notes.Count != 0)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(conventionalCommit.Subject);
+            
+            foreach (ConventionalCommitNote conventionalCommitNote in conventionalCommit.Notes)
+            {
+                sb.Append(",");
+                sb.Append(conventionalCommitNote.Text);
+            }
+
+            commit.Message = sb.ToString();
+        }
+        else
+        {
+            commit.Message = conventionalCommit.Subject ?? "No subject";
+        }
+
+
+        return commit;
+    }
+    
 
     public static string GenerateCommitList(
         IChangelogLinkBuilder linkBuilder,

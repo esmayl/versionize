@@ -50,4 +50,8 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Versionize.Database\Versionize.Database.csproj" />
+  </ItemGroup>
 </Project>

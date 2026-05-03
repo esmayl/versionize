@@ -5,6 +5,7 @@ using Version = NuGet.Versioning.SemanticVersion;
 using Versionize.ConventionalCommits;
 using Versionize.Config;
 using Versionize.Changelog.LinkBuilders;
+using Versionize.Database.Models;
 
 namespace Versionize.Changelog;
 
@@ -612,6 +613,57 @@ public class ChangelogBuilderTests : IDisposable
         Assert.Contains(expected, markdown);
     }
 
+    [Fact]
+    public void GenerateReleaseModelForFixFeatAndBreakingCommitsAsModel()
+    {
+        // Arrange
+        var linkBuilder = new NullLinkBuilder();
+
+        // Act
+        Release release = ChangelogBuilder.GenerateReleaseModel(
+            new Version(1, 1, 0),
+            new Version(1, 1, 0),
+            DateTimeOffset.Parse("2021-5-2"),
+            linkBuilder,
+            [
+                ConventionalCommitParser.Parse(new TestCommit("a360d6a307909c6e571b29d4a329fd786c5d4543", "fix: a fix")),
+                ConventionalCommitParser.Parse(new TestCommit("b360d6a307909c6e571b29d4a329fd786c5d4543", "feat: a feature")),
+                ConventionalCommitParser.Parse(
+                    new TestCommit("c360d6a307909c6e571b29d4a329fd786c5d4543", "feat: a breaking change feature\nBREAKING CHANGE: this will break everything")),
+            ],
+            ProjectOptions.DefaultOneProjectPerRepo);
+
+        // Assert
+        Assert.NotNull(release);
+        Assert.Equal(release.Commits.Count,3);
+    }
+    
+    [Fact]
+    public void GenerateCSVForFixFeatAndBreakingCommitsFromModel()
+    {
+        // Arrange
+        var linkBuilder = new NullLinkBuilder();
+
+        // Act
+        Release release = ChangelogBuilder.GenerateReleaseModel(
+            new Version(1, 1, 0),
+            new Version(1, 1, 0),
+            DateTimeOffset.Parse("2021-5-2"),
+            linkBuilder,
+            [
+                ConventionalCommitParser.Parse(new TestCommit("a360d6a307909c6e571b29d4a329fd786c5d4543", "fix: a fix")),
+                ConventionalCommitParser.Parse(new TestCommit("b360d6a307909c6e571b29d4a329fd786c5d4543", "feat: a feature")),
+                ConventionalCommitParser.Parse(
+                    new TestCommit("c360d6a307909c6e571b29d4a329fd786c5d4543", "feat: a breaking change feature\nBREAKING CHANGE: this will break everything")),
+            ],
+            ProjectOptions.DefaultOneProjectPerRepo);
+
+        // Assert
+        Assert.NotNull(release);
+        Assert.Equal(release.Commits.Count,3);
+    }
+    
+    
     public void Dispose()
     {
         Cleanup.DeleteDirectory(_testDirectory);

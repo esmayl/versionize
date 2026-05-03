@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Versionize.Database", "Versionize.Database\Versionize.Database.csproj", "{3C30CD29-9361-471A-9DB6-59510AB7D586}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,18 @@ Global
 		{FCB2DE7F-42A3-46A8-8808-983EF1CC0192}.Release|x64.Build.0 = Release|Any CPU
 		{FCB2DE7F-42A3-46A8-8808-983EF1CC0192}.Release|x86.ActiveCfg = Release|Any CPU
 		{FCB2DE7F-42A3-46A8-8808-983EF1CC0192}.Release|x86.Build.0 = Release|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Debug|x64.Build.0 = Debug|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Debug|x86.Build.0 = Debug|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Release|x64.ActiveCfg = Release|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Release|x64.Build.0 = Release|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Release|x86.ActiveCfg = Release|Any CPU
+		{3C30CD29-9361-471A-9DB6-59510AB7D586}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
